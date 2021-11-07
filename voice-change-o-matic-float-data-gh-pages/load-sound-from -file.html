@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Web Audio API: Simple load + play</title>
+</head>
+<body>
+  <p>Example of using the Web Audio API to load a sound file
+  and start playing on user-click.</p>
+  <p>The WebAudio API is beyond the scope of this course (covered in the HTML5 part 2 course), but notice that the local file is read as a binary  file with <b>reader.readAsArrayBuffer</b>.
+    <p>
+  <input type="file" accept="audio/*">
+  <button onclick="playSound()" disabled>Start</button>
+  <button onclick="stopSound()" disabled>Stop</button>
+
+  <canvas id="view1" width="750" height="200"></canvas>
+
+  <canvas id="oscilloscope"></canvas>
+
+
+<script>
+// WebAudio context
+var context = new window.AudioContext();
+var source = null;
+var audioBuffer = null;
+
+function stopSound() {
+  if (source) {
+    source.stop();
+  }
+}
+
+function playSound() {
+  // Build a source node for the audio graph
+  source = context.createBufferSource();
+  source.buffer = audioBuffer;
+  source.loop = false;
+  // connect to the speakers
+  source.connect(context.destination);
+  dd(source.buffer);///call function to draw the sound shape
+  source.start(0); // Play immediately.
+}
+
+
+            function dd(buffer) { 
+                var canvas = document.getElementById("view1");
+                drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffer ); }
+
+function initSound(audioFile) {
+  // The audio file may be a mp3, we must decode it before playing it from memory
+  context.decodeAudioData(audioFile, function(buffer) {
+    // audioBuffer the decoded audio file we're going to work with
+    audioBuffer = buffer;
+    
+    // Enable all buttons once the audio file is
+    // decoded
+    var buttons = document.querySelectorAll('button');
+    buttons[0].disabled = false;
+    buttons[1].disabled = false;
+  }, function(e) {
+    console.log('Error decoding file', e);
+  }); 
+}
+
+ 
+// User selects file, read it as an ArrayBuffer and pass to the API.
+var fileInput = document.querySelector('input[type="file"]');
+  
+fileInput.addEventListener('change', function(e) {  
+  var reader = new FileReader();
+  
+  reader.onload = function(e) {
+    initSound(e.target.result);
+  };
+  // THIS IS THE INTERESTING PART!
+  reader.readAsArrayBuffer(this.files[0]);
+}, false);
+
+function drawBuffer( width, height, context, buffer ) {///creates static sound file shape
+    var data = buffer.getChannelData( 0 );
+    var step = Math.ceil( data.length / width );
+    var amp = height / 2;
+    for(var i=0; i < width; i++){
+        var min = 1.0;
+        var max = -1.0;
+        for (var j=0; j<step; j++) {
+            var datum = data[(i*step)+j]; 
+            if (datum < min)
+                min = datum;
+            if (datum > max)
+                max = datum;
+        }
+        context.fillRect(i,(1+min)*amp,1,Math.max(1,(max-min)*amp));
+    }
+}
+
+const analyser = context.createAnalyser();
+masterGain.connect(analyser);
+
+const waveform = new Float32Array(analyser.frequencyBinCount);
+analyser.getFloatTimeDomainData(waveform);
+
+function updateWaveform() {
+  requestAnimationFrame(updateWaveform);
+  analyser.getFloatTimeDomainData(waveform);
+}
+
+function drawOscilloscope() {
+    requestAnimationFrame(drawOscilloscope);
+ 
+    const scopeCanvas = document.getElementById('oscilloscope');
+    const scopeContext = scopeCanvas.getContext('2d');
+ 
+    scopeCanvas.width = waveform.length;
+    scopeCanvas.height = 200;
+ 
+    scopeContext.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
+    scopeContext.beginPath();
+ 
+    for(let i = 0; i < waveform.length; i++) {
+        const x = i;
+        const y = ( 0.5 + (waveform[i] / 2) ) * scopeCanvas.height;
+ 
+        if(i == 0) {
+            scopeContext.moveTo(x, y);
+        } else {
+            scopeContext.lineTo(x, y);
+        }
+    }
+ 
+    scopeContext.stroke();
+}
+
+</script>
+
+
+
+
+
+
+
+<!-- <script src="scripts/app2-load-sound.js"></script> -->
+</body>
+</html>
