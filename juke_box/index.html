@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang='eng'>
+   <head>
+      <title>Page Title</title>
+      <link rel="stylesheet" href="juke.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+      <link rel="preconnect" href="https://fonts.gstatic.com">
+      <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+      <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js')
+          .then(function(reg) {
+            console.log('Registration succeeded.');
+          }).catch(function(error) {
+            console.log('Registration failed with ' + error);
+          });
+        }
+      </script>
+   </head>
+
+      <body>
+        <p>
+            Sample is cached: <span id="js-status">Unknown</span>
+          </p>
+          <p>
+            <button id="js-cache-btn">Cache file</button>   </p>
+            <p></p> <button id="js-remove-cache-btn">Remove file from cache</button>
+          </p>
+      <header>
+         <h1><i class="fas fa-compact-disc" ></i> Juke-Box</h1>
+         <p> You can play a song from the list below, or upload your own</p>
+         <br>
+         <input type = 'file' id='check'  accept="audio/mpeg">
+      </header>
+      <div id="container">
+         <div class="items item--active">
+            <p>Dog-whistle-sound-11.200-Hz_01.mp3</p>
+
+            <audio src="Dog-whistle-sound-11.200-Hz_01.mp3"></audio>
+         </div>
+         <div class="items">
+            <p>Dog-whistle-sound-12.200-Hz_01.mp3</p>
+            <audio src="Dog-whistle-sound-12.200-Hz_01.mp3"></audio>
+         </div>
+         <div class="items">
+            <p>Dog-whistle-sound-16.000-Hz_01.mp33</p>
+            <audio src="Dog-whistle-sound-16.000-Hz_01.mp3"></audio>
+         </div>
+        <div class="items">
+            <p>Dog-whistle-sound-20.000-Hz_01.mp3</p>
+            <audio src="Dog-whistle-sound-20.000-Hz_01.mp3"></audio>
+         </div>
+         <div class="items">
+            <p>Cricket-sound-6_01.mp3</p>
+            <audio src="Cricket-sound-6_01.mp3"></audio>
+         </div>
+      </div>
+      <div id = 'control'>
+         <div class ='icons'>
+            <div class='flex'>
+               <div>
+                  <i class="fas fa-random" id="random"></i>
+               </div>
+               <div>
+                  <button id="previous">
+                  <i class="fas fa-step-backward"></i>
+                  </button>
+                  <button id="pauseButt">
+                  <i class="fas fa-pause"></i>
+                  </button>
+                  <button id="playButt">
+                  <i class="fas fa-play"></i>
+                  </button>
+                  <button id="next">
+                  <i class="fas fa-step-forward"></i>
+                  </button>
+               </div>
+               <div>
+                  <i class="fas fa-volume-up"></i>
+                  <i><p><input type="range" min="0" max="100" value="100" oninput="sample.changeVolume(this);"> Volume</p></i>
+               </div>
+            </div>
+            <span id="current">0:00</span>
+            <input type="range" id="seekBar" value="0">
+            <!-- isn't responsive in mobile-->
+            <span id="duration">0:00</span>
+            <p id="currentSongName"></p>
+         </div>
+      </div>
+      <script src="juke.js"></script>
+   </body>
+</html>
+
+<!--
+   add error functionality to disallow anything other than audio files to be uploaded
+-->
+
